@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <style>
+
+        #my_map {
+            width: 80%;
+            height: auto;
+            margin: auto;
+        }
+
+        .row.limit [class*="col-"]{
+            max-height:500px;
+            overflow-y:scroll        
+        }
+            
+    </style>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}gpu-search{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+        <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('vendor/openlayers/ol.css') }}" />
+        {# TODO vérifier que c'est utile #}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-typeahead/2.10.6/jquery.typeahead.min.css" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+        <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('vendor/bootstrap-typeahead/bootstrap3-typeahead.js') }}"></script>
+        <script src="{{ asset('vendor/openlayers/ol-debug.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('gpu-search.js') }}" type="text/javascript"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
+

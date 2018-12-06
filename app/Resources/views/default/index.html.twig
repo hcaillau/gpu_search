@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - démonstrateur{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="row limit">
+        <div class="col-4">
+            <h1>Démonstrateur</h1>
+
+            {{ form(form) }}
+
+        </div>
+        <div class="col-8">
+          <h1>Résultats</h1>
+          {% for item in searchResult.items %}
+            <div id="document-{{ item.id }}" class="list-group" style="margin-top : 30px">
+
+                <div class="d-flex w-100 justify-content-between title" > 
+                  <h5 class="mb-1">{{ item.title }}</h5>
+                </div>
+                <p class="mb-1">Type de document: {{ item.type }}</p>
+                <p class="mb-1">Organisme producteur : {{ item.organisme }} </p>
+                <small id="item_name">{{ item.name }}</small>
+                <small style="text-align : right">Score : {{ item._score }}</small>
+                <br /><br />
+            </div>
+          {% endfor %}
+        </div>  
+    </div>
+    <div style="margin-top:50px;">
+      <div id="my_map" class="my_map">
+      </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+
+<script type="text/javascript">
+var wkt = '{% if searchResult.items[0] is defined %}{{ searchResult.items[0].geometry }} {%else%} {{null}}{% endif %}';
+
+var items = {% if searchResult.items[0] is defined %}{{ (searchResult.items | json_encode | raw) }} {%else%} [] {% endif %};
+
+var item_name = '';
+
+$(document).ready(function(){
+    $('form').attr('autocomplete', 'off');
+    $("[name='document_search[sup_cat]']").parent().css('display', 'none');
+});
+
+$("[name='document_search[type]']").click(function(){
+    if ($("[name='document_search[type]']").val() == 'SUP')
+      $("[name='document_search[sup_cat]']").parent().css('display', 'block');
+    else
+      $("[name='document_search[sup_cat]']").parent().css('display', 'none');
+});
+
+/* https://github.com/bassjobsen/Bootstrap-3-Typeahead#using-json-objects-instead-of-simple-strings */
+var input = $('#document_search_organisme');
+var output;
+
+$('#document_search_title').typeahead({
+  source: function(term, cb){
+    var url = {{ path('api_autocomplete_document_title') | json_encode() | raw }};
+    url += '?term='+term;
+    $.getJSON(url,function(titles){
+      var result = [];
+      titles.forEach(function(title){
+        result.push({id: title, name: title});
+      });
+      cb(result);
+    });
+  },
+  autoSelect: true
+});
+
+$('#document_search_organisme').typeahead({
+  source: function(term, cb){
+    var url = {{ path('api_autocomplete_document_organisme') | json_encode() | raw }};
+    url += '?term='+term;
+    $.getJSON(url,function(organismes){
+      var result = [];
+      organismes.forEach(function(organisme){
+        result.push({id: organisme, name: organisme});
+      });
+      cb(result);
+    });
+  },
+  autoSelect: true
+});
+
+
+</script>
+<script type="text/javascript">
+var viewer = gpuSearch.loadViewer("my_map",items);
+
+$( '.list-group' ).click(function(){
+    item_name = $( this ).find('#item_name').text();
+    gpuSearch.zoomOnFeature(item_name, viewer);
+});
+</script>
+{% endblock %}
+
+

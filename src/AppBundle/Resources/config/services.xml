@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <service id="app.index.document" class="AppBundle\Index\DocumentIndex" public="true" >
+            <argument>%es_url%</argument>
+        </service>
+        
+        <service id="app.extractor.document" class="AppBundle\Extractor\DocumentExtractor" public="true" >
+            <argument>%gpu_url%</argument>
+            <argument type="service" id="logger" />
+        </service>
+
+
+    </services>
+
+</container>

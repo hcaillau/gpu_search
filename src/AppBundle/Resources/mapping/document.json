@@ -1,0 +1,68 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "autocomplete_filter": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20
+        }
+      },
+      "analyzer": {
+        "autocomplete": {
+          "type" : "custom",
+          "tokenizer": "keyword",
+          "filter": [
+            "lowercase",
+            "autocomplete_filter"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "title": {
+          "type": "text",
+          "fielddata": true,
+          "analyzer": "standard",
+          "fields": {
+            "suggest": {
+              "type": "completion",
+              "analyzer": "autocomplete",
+              "search_analyzer": "autocomplete"
+            }
+          }
+        },
+        "name": {
+          "type": "text"
+        },
+        "type":{
+          "type": "keyword"
+        },
+        "sup_cat":{
+          "type": "keyword"
+        },
+        "id": {
+          "type": "text"
+        },
+        "organisme": {
+          "type": "text",
+          "analyzer": "standard",
+          "fields": {
+            "suggest": {
+              "type": "completion",
+              "analyzer": "autocomplete",
+              "search_analyzer": "autocomplete"
+            }
+          }
+        },
+        "geometry": {
+          "type": "geo_shape",
+          "strategy": "recursive"
+        }
+      }
+    }
+  }
+}

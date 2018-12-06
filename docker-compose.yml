@@ -1,0 +1,50 @@
+version: '3.5'
+services:
+
+    #---------------------------------------------------------------------------
+    # site
+    #---------------------------------------------------------------------------
+    site:
+        image: registry.sai-experimental.ign.fr/ign/gpu-search:latest
+        container_name: gpu-search
+        build: .
+        environment:
+            - NO_PROXY=elasticsearch
+            - ELASTICSEARCH_URL=http://elasticsearch:9200
+            - GPU_SEARCH_SECRET=ChangeItForProduction
+        volumes:
+            - output-data:/application/output
+        depends_on:
+            - elasticsearch
+        labels:
+            - "traefik.enable=true"
+            - "traefik.port=80"
+            - "traefik.frontend.rule=Host:gpu-search.${HOST_HOSTNAME}"
+        restart: always
+
+    #---------------------------------------------------------------------------
+    # ElasticSearch
+    #---------------------------------------------------------------------------
+    elasticsearch:
+        image: registry.sai-experimental.ign.fr/ign/elasticsearch:6.4.0
+        container_name: gpu-search-es
+        environment:
+            - discovery.type=single-node
+        volumes:
+            - elasticsearch-data:/usr/share/elasticsearch/data       
+        labels:
+            - "traefik.enable=true"
+            - "traefik.port=9200"
+            - "traefik.frontend.rule=Host:gpu-search-es.${HOST_HOSTNAME}"
+        restart: always
+
+volumes:
+    output-data:
+        name: gpu-search-output
+    elasticsearch-data:
+        name: gpu-search-es
+
+networks:
+    default:
+        external:
+            name: webgateway
